@@ -1,20 +1,22 @@
 #include "raylib.h"
-
-// À ne pas lancer car fait lagguer l'ordinateur
+#include "Echiquier.hpp"
 
 int main()
 {
-  const int windowWidth(800);
-  const int windowHeigth(450);
+  Echiquier chessBoard;
 
-  InitWindow(windowWidth, windowHeigth, "Test Window");
+  const int windowWidth(1600); // Format : 16:9
+  const int windowHeigth(900);
+  
+  InitWindow(windowWidth, windowHeigth, "Chessgame");
   SetTargetFPS(30);
 
-  Texture2D array[32];
+  // Texture2D array[32];
+  //
+  // Image wp = LoadImage("/test");
+  // ImageResize(Image *image, int newWidth, int newHeight)
+  // array[0] = LoadTextureFromImage(wp);
 
-  Image wp = LoadImage("/test");
-  ImageResize(Image *image, int newWidth, int newHeight)
-  array[0] = LoadTextureFromImage(wp);
 
   while (!WindowShouldClose())
   {
@@ -22,7 +24,7 @@ int main()
 
     ClearBackground(LIGHTGRAY);
     //DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
-
+    chessBoard.drawChessboard();
     EndDrawing();
   }
   CloseWindow();
