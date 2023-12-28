@@ -1,2 +1,8 @@
 Chaque pièce ne sera plus définies par une classe de son type (exemple : tour => class Tour) mais ses déplacements seront limités en fonction de son rôle.
 Le rôle sera reconnaissable par la lettre.
+
+
+main.cpp => boucle de jeu
+Echiquier.[c|h]pp => permet de gérer les échiquiers et leur interface + les mouvements des pièces.
+
+Utiliser un dictionnaire pour gérer l'échiquier.
