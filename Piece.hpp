@@ -1,13 +1,17 @@
 #ifndef PIECE_HPP
 #define PIECE_HPP
-#include "raylib.h"
+#include <raylib.h>
+#include <utility>
+
+using namespace std;
 
 class Piece
 {
   public:
     Piece();
   private:
-    Color colorPiece;
+    Color m_colorPiece;
+    pair<int, int> m_pieceMoove[16];
 };
 
 
