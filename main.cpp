@@ -1,6 +1,3 @@
-#include <iostream>
-#include <string>
-#include <vector>
 #include "EchiquierT.hpp"
 
 using namespace std;
@@ -11,3 +8,4 @@ int main()
   Echiquier echiquier;
   return 0;
 }
+
