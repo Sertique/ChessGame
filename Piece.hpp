@@ -15,7 +15,7 @@ enum piece_type
   king,
   queen,
   pawn,
-  empty
+  Empty
 };
 typedef enum piece_type piece_type;
 
@@ -32,9 +32,10 @@ class Piece
     static unsigned int get_positionZ(unsigned int X, unsigned int Y);
     static pair<unsigned int, unsigned int> get_positionXY(unsigned int Z);
     Texture2D get_pieceTexture();
+    ~Piece();
   protected:
     piece_color m_colorPiece;
-    pair<int, int> m_pieceMoove[16];
+    pair<int, int> m_pieceMovements[16];
     Texture2D m_pieceImage;
     unsigned int m_positionZ; /* The position in an one dimension array */
 };
@@ -43,8 +44,63 @@ class King : public Piece
 {
   public:
     King(piece_color colorPiece, unsigned int X, unsigned int Y, string pathToImageFile);
+    ~King();
   protected:
-    // Moove limite
+    pair<int, int> m_kingMovements[8];
+};
+
+class Queen : public Piece
+{
+  public:
+    Queen(piece_color colorPiece, unsigned int X, unsigned int Y, string pathToImageFile);
+    ~Queen();
+  protected:
+    pair<int, int> m_queenMovements[8];
+};
+
+class Rook : public Piece
+{
+  public:
+    Rook(piece_color colorPiece, unsigned int X, unsigned int Y, string pathToImageFile);
+    ~Rook();
+  protected:
+    pair<int, int> m_rookMovements[4];
+};
+
+class Bishop : public Piece
+{
+  public:
+    Bishop(piece_color colorPiece, unsigned int X, unsigned int Y, string pathToImageFile);
+    ~Bishop();
+  protected:
+    pair<int, int> m_bishopMovements[4];
+};
+
+class Knight : public Piece
+{
+  public:
+    Knight(piece_color colorPiece, unsigned int X, unsigned int Y, string pathToImageFile);
+    ~Knight();
+  protected:
+    pair<int, int> m_knightMovements[8];
+};
+
+class WhitePawn : public Piece
+{
+  public:
+    WhitePawn(piece_color colorPiece, unsigned int X, unsigned int Y, string pathToImageFile);
+    ~WhitePawn();
+  protected:
+    pair<int, int> m_whitePawnMovements[4];
+};
+
+class BlackPawn : public Piece
+{
+  public:
+    BlackPawn(piece_color colorPiece, unsigned int X, unsigned int Y, string pathToImageFile);
+    ~BlackPawn();
+  protected:
+    pair<int, int> m_blackPawnMovements[4];
 };
 
 

@@ -4,6 +4,5 @@ Echiquier.[c|h]pp => permet de gérer les échiquiers et leur interface + les mo
 Les pièces seront stockées directement dans l'échiquier.
 
 À travailler :
-  - Piece.cpp , ligne 27 : chargement des images des pièces.
-  - Echiquier.cpp , ligne 68 : initialisation des pièces
-  - Faire une fonction pour donner les coordonnées des images des pièces via celles des cellules.
+  - Implémenter la séléction des pièces et la possibilité de voir les mouvements possibles par celles-ci.
+  - Implémenter les mouvements des pièces.

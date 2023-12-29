@@ -14,7 +14,7 @@ class Echiquier {
     bool estPair(int x);
     static int get_cellSize();
     static Color get_Color(piece_color color);
-    void pieceInitialization(piece_type pieceType, piece_color colorPiece, unsigned int positionX, unsigned int positionY);
+    void pInit(piece_type pieceType, piece_color colorPiece, unsigned int positionX, unsigned int positionY); // Name : pieceInitialization
 
   private:
     static int m_cellSize;

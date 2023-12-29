@@ -46,9 +46,26 @@ Echiquier::Echiquier()
     x = m_cellSize;
     y -= 100;
   }
-/* Piece initialization */
-  pieceInitialization(king, White, 4, 0);
-  pieceInitialization(king, Black, 4, 7);
+/* Piece initialization  / je garde la position de la ligne (Y) pour permettre les promotions */
+  pInit(king, White, 4, 0);
+  pInit(queen, White, 3, 0);
+  pInit(bishop, White, 2, 0);
+  pInit(bishop, White, 5, 0);
+  pInit(knight, White, 1, 0);
+  pInit(knight, White, 6, 0);
+  pInit(rook, White, 0, 0);
+  pInit(rook, White, 7, 0);
+
+
+
+  pInit(king, Black, 4, 7);
+  pInit(queen, Black, 3, 7);
+  pInit(bishop, Black, 2, 7);
+  pInit(bishop, Black, 5, 7);
+  pInit(knight, Black, 1, 7);
+  pInit(knight, Black, 6, 7);
+  pInit(rook, Black, 0, 7);
+  pInit(rook, Black, 7, 7);
 
 }
 
@@ -81,19 +98,55 @@ void Echiquier::drawChessboard()
 }
 
 
-void Echiquier::pieceInitialization(piece_type pieceType, piece_color colorPiece, unsigned int posX, unsigned int posY)
+void Echiquier::pInit(piece_type pieceType, piece_color colorPiece, unsigned int posX, unsigned int posY)
 {
   string path;
-  if (pieceType == king)
-  {
-    if (colorPiece == White)
-    {
+  if (pieceType == king) /* KING */ {
+    if (colorPiece == White) {
       path = "./chessPieceImage/wk.png";
     } else {
       path = "./chessPieceImage/bk.png";
     }
     chessBoard[Piece::get_positionZ(posX, posY)].pieceContent = new King(colorPiece, posX, posY, path);
-  } else {
+  } else if (pieceType == queen) /* QUEEN */ {
+    if (colorPiece == White) {
+      path = "./chessPieceImage/wq.png";
+    } else {
+      path = "./chessPieceImage/bq.png";
+    }
+    chessBoard[Piece::get_positionZ(posX, posY)].pieceContent = new Queen(colorPiece, posX, posY, path);
+  } else if (pieceType == rook) { /* ROOK */
+    if (colorPiece == White) {
+      path = "./chessPieceImage/wr.png";
+    } else {
+      path = "./chessPieceImage/br.png";
+    }
+    chessBoard[Piece::get_positionZ(posX, posY)].pieceContent = new Rook(colorPiece, posX, posY, path);
+  } else if (pieceType == bishop) { /* BISHOP */
+    if (colorPiece == White) {
+        path = "./chessPieceImage/wb.png";
+    } else {
+      path = "./chessPieceImage/bb.png";
+    }
+    chessBoard[Piece::get_positionZ(posX, posY)].pieceContent = new Bishop(colorPiece, posX, posY, path);
+    } else if (pieceType == knight) { /* KNIGHT */
+      if (colorPiece == White) {
+        path = "./chessPieceImage/wn.png";
+      } else {
+        path = "./chessPieceImage/bn.png";
+      }
+    chessBoard[Piece::get_positionZ(posX, posY)].pieceContent = new Knight(colorPiece, posX, posY, path);
+    } else if (pieceType == pawn) { /* PAWN */
+      if (colorPiece == White) {
+        path = "./chessPieceImage/wp.png";
+        chessBoard[Piece::get_positionZ(posX, posY)].pieceContent = new WhitePawn(colorPiece, posX, posY, path);
+      } else {
+        path = "./chessPieceImage/bp.png";
+        chessBoard[Piece::get_positionZ(posX, posY)].pieceContent = new BlackPawn(colorPiece, posX, posY, path);
+      }
+   } else {
     std::cout << "Pas de pièce initialisée" << std::endl;
   }
 }
+
+
