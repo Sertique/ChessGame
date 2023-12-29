@@ -21,3 +21,7 @@ Piece::Piece() {
   m_pieceMoove[14] = pair<int, int> (-1, -1);
   m_pieceMoove[15] = pair<int, int> (-1, 1);
 };
+
+/* King */
+King::King(Color colorPiece) : Piece() 
+{};

@@ -9,9 +9,18 @@ class Piece
 {
   public:
     Piece();
-  private:
+  protected:
     Color m_colorPiece;
     pair<int, int> m_pieceMoove[16];
+    Image m_pieceImage;
+};
+
+class King : public Piece
+{
+  public:
+    King(Color colorPiece);
+  private:
+    // moove limit
 };
 
 
