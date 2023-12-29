@@ -3,13 +3,14 @@
 
 int main()
 {
-  Echiquier chessBoard;
 
   const int windowWidth(1600); // Format : 16:9
   const int windowHeigth(900);
   
   InitWindow(windowWidth, windowHeigth, "Chessgame");
   SetTargetFPS(30);
+
+  Echiquier chessBoard;
 
   // Texture2D array[32];
   //

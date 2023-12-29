@@ -2,3 +2,8 @@ main.cpp => boucle de jeu
 Echiquier.[c|h]pp => permet de gérer les échiquiers et leur interface + les mouvements des pièces.
 
 Les pièces seront stockées directement dans l'échiquier.
+
+À travailler :
+  - Piece.cpp , ligne 27 : chargement des images des pièces.
+  - Echiquier.cpp , ligne 68 : initialisation des pièces
+  - Faire une fonction pour donner les coordonnées des images des pièces via celles des cellules.

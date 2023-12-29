@@ -12,11 +12,14 @@ class Echiquier {
     Echiquier();
     void drawChessboard();
     bool estPair(int x);
+    static int get_cellSize();
+    static Color get_Color(piece_color color);
+    void pieceInitialization(piece_type pieceType, piece_color colorPiece, unsigned int positionX, unsigned int positionY);
 
   private:
-    unsigned int m_cellSize;
+    static int m_cellSize;
     Cell chessBoard[64];
-    Texture2D m_chessBoardTexture[64];
+    Texture2D m_chessBoardTexture[64]; // To be deleted
 
 
 
