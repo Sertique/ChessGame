@@ -55,8 +55,14 @@ Echiquier::Echiquier()
   pInit(knight, White, 6, 0);
   pInit(rook, White, 0, 0);
   pInit(rook, White, 7, 0);
-
-
+  pInit(pawn, White, 0, 1);
+  pInit(pawn, White, 1, 1);
+  pInit(pawn, White, 2, 1);
+  pInit(pawn, White, 3, 1);
+  pInit(pawn, White, 4, 1);
+  pInit(pawn, White, 5, 1);
+  pInit(pawn, White, 6, 1);
+  pInit(pawn, White, 7, 1);
 
   pInit(king, Black, 4, 7);
   pInit(queen, Black, 3, 7);
@@ -66,6 +72,16 @@ Echiquier::Echiquier()
   pInit(knight, Black, 6, 7);
   pInit(rook, Black, 0, 7);
   pInit(rook, Black, 7, 7);
+  pInit(rook, Black, 0, 0);
+  pInit(rook, Black, 7, 0);
+  pInit(pawn, Black, 0, 6);
+  pInit(pawn, Black, 1, 6);
+  pInit(pawn, Black, 2, 6);
+  pInit(pawn, Black, 3, 6);
+  pInit(pawn, Black, 4, 6);
+  pInit(pawn, Black, 5, 6);
+  pInit(pawn, Black, 6, 6);
+  pInit(pawn, Black, 7, 6);
 
 }
 
