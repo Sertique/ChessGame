@@ -1,14 +1,14 @@
 #include "Echiquier.hpp"
-#include <raylib.h>
-#include "Piece.hpp"
 #include <iostream>
+#include <raylib.h>
 #include <vector>
 
-int Echiquier::m_cellSize(100); /* */ int Echiquier::get_cellSize() { return m_cellSize; }
+int Echiquier::m_cellSize(100); /* */ int Echiquier::get_cellSize() { return m_cellSize; } /* */ int Echiquier::m_circlePosition(m_cellSize / 2);
+/* À modifier pour qu'elles ne soient plus static */
 
-Color Echiquier::get_Color(piece_color color) {
-  if (color == White) { return WHITE;
-  } else { return BLACK; }
+Color Echiquier::get_Color(piece_color color) { /* Color for the chessboard image */
+  if (color == White) { return GRAY;
+  } else { return BROWN; }
 }
 
 // Color Echiquier::get_inverseColor(piece_color color) {
@@ -18,7 +18,8 @@ Color Echiquier::get_Color(piece_color color) {
 
 Echiquier::Echiquier()
 {
-// Cells color initialization
+/* Cells initialization */
+  int x(m_cellSize), y(m_cellSize * 8); // I begin to the first cell who are at the bottom of the window.
   for (int i(0) ; i < 8 ; i++)
   {
     for (int j(0) ; j < 8 ; j++)
@@ -28,16 +29,7 @@ Echiquier::Echiquier()
       } else {
         chessBoard[i * 8 + j].colorOfCell = White;
       }
-    }
-  }
-
-  /* Initialization of cells origin */
-  int x(m_cellSize), y(m_cellSize * 8); // I begin to the first cell who are at the bottom of the window.
-  for (int i(0) ; i < 8 ; i++)
-  {
-    for (int j(0) ; j < 8 ; j++)
-    {
-      chessBoard[Piece::get_positionZ(j, i)].xOrigin = x;
+      chessBoard[Piece::get_positionZ(j, i)].xOrigin = x; /* Origins initialization */
       chessBoard[Piece::get_positionZ(j, i)].yOrigin = y;
       chessBoard[Piece::get_positionZ(j, i)].cellSize = m_cellSize;
       chessBoard[Piece::get_positionZ(j, i)].pieceContent = nullptr;
@@ -72,8 +64,6 @@ Echiquier::Echiquier()
   pInit(knight, Black, 6, 7);
   pInit(rook, Black, 0, 7);
   pInit(rook, Black, 7, 7);
-  pInit(rook, Black, 0, 0);
-  pInit(rook, Black, 7, 0);
   pInit(pawn, Black, 0, 6);
   pInit(pawn, Black, 1, 6);
   pInit(pawn, Black, 2, 6);
@@ -165,4 +155,76 @@ void Echiquier::pInit(piece_type pieceType, piece_color colorPiece, unsigned int
   }
 }
 
+void Echiquier::pieceMovementsWriting(Piece &piece)
+{
+  pair<int, int> p, currentPos;
+  int arrivalCell, xArrival, yArrival;
 
+  m_pieceMovements.clear();
+
+  for (int i(1) ; i <= piece.get_distance() ; i++) /* Répète suivant la distance possible */
+  {
+    for (int j(0) ; j < piece.get_nbPieceMovements() ; j++)
+    {
+      p = piece.get_pieceMovements(j);
+      currentPos = Piece::get_positionXY(piece.get_position());
+      xArrival = currentPos.first + p.first * i;
+      yArrival = currentPos.second + p.second * i;
+
+      if (xArrival >= 0 && xArrival < 8 && yArrival >= 0 && yArrival < 8)
+      {
+        arrivalCell = Piece::get_positionZ(xArrival, yArrival);
+      }
+
+      if (arrivalCell < 64 && arrivalCell >= 0 && ( chessBoard[arrivalCell].pieceContent == nullptr || chessBoard[arrivalCell].pieceContent->get_color() != piece.get_color() ) )
+      {
+        m_pieceMovements.push_back(arrivalCell); /* Garde les coordonnées d'arrivée */
+      }
+    }
+  }
+}
+
+void Echiquier::cellSelection(int xMouse, int yMouse)
+{
+  xMouse = xMouse - (xMouse % 100);
+  yMouse = yMouse - (yMouse % 100);
+  m_isSelected = false;
+
+  for (int i(0) ; i < 64 ; i++ )
+  {
+    if (xMouse == chessBoard[i].xOrigin && yMouse == chessBoard[i].yOrigin)
+    {
+      m_selectedCell = i;
+      m_isSelected = true;
+    }
+  }
+
+  if (!m_isSelected)
+  { 
+    m_selectedCell = -1;
+    cout << "No cell selected." << endl; 
+  }
+}
+
+
+void Echiquier::drawMovements()
+{
+  vector<int>::iterator it;
+  for (it = m_pieceMovements.begin() ; it != m_pieceMovements.end() ; it++)
+  {
+    DrawCircle(chessBoard[*it].xOrigin + m_circlePosition, chessBoard[*it].yOrigin + m_circlePosition, 10, BLUE);
+  }
+}
+
+void Echiquier::pieceSelection(int xMouse, int yMouse)
+{
+  cellSelection(xMouse, yMouse);
+  if (m_isSelected && m_selectedCell > -1)
+  {
+    Piece *selection = chessBoard[m_selectedCell].pieceContent;
+    if (selection != nullptr)
+    {
+      pieceMovementsWriting(*selection);
+    }
+  }
+}

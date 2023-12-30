@@ -46,10 +46,11 @@ Piece::Piece(piece_color colorPiece, unsigned int X, unsigned int Y, string path
 }
 Piece::~Piece() {};
 
-Texture2D Piece::get_pieceTexture()
-{
-  return m_pieceImage;
-}
+Texture2D Piece::get_pieceTexture() { return m_pieceImage; }
+int Piece::get_position() { return m_positionZ; }
+unsigned int Piece::get_distance() { return m_distancePossible; }
+piece_color Piece::get_color() { return m_colorPiece; }
+
 
 /* King */
 King::King(piece_color colorPiece, unsigned int X, unsigned int Y, string pathToImageFile) : Piece(colorPiece, X, Y, pathToImageFile)
@@ -58,9 +59,12 @@ King::King(piece_color colorPiece, unsigned int X, unsigned int Y, string pathTo
   {
     m_kingMovements[i] = Piece::m_pieceMovements[i+8];
   }
+  m_distancePossible = 1;
 }
-
 King::~King() {}
+
+int King::get_nbPieceMovements() { return 8; }
+pair<int, int> King::get_pieceMovements(int x) { return m_kingMovements[x]; }
 
 
 /* Queen */
@@ -70,8 +74,12 @@ Queen::Queen(piece_color colorPiece, unsigned int X, unsigned int Y, string path
   {
     m_queenMovements[i] = Piece::m_pieceMovements[i+8];
   }
+  m_distancePossible = 7;
 }
 Queen::~Queen() {}
+
+int Queen::get_nbPieceMovements() { return 8; }
+pair<int, int> Queen::get_pieceMovements(int x) { return m_queenMovements[x]; }
 
 /* Rook */
 Rook::Rook(piece_color colorPiece, unsigned int X, unsigned int Y, string pathToImageFile) : Piece(colorPiece, X, Y, pathToImageFile)
@@ -80,8 +88,12 @@ Rook::Rook(piece_color colorPiece, unsigned int X, unsigned int Y, string pathTo
   {
     m_rookMovements[i] = Piece::m_pieceMovements[i+8];
   }
+  m_distancePossible = 7;
 }
 Rook::~Rook() {}
+
+int Rook::get_nbPieceMovements() { return 4; }
+pair<int, int> Rook::get_pieceMovements(int x) { return m_rookMovements[x]; }
 
 /* Bishop */
 Bishop::Bishop(piece_color colorPiece, unsigned int X, unsigned int Y, string pathToImageFile) : Piece(colorPiece, X, Y, pathToImageFile)
@@ -90,8 +102,12 @@ Bishop::Bishop(piece_color colorPiece, unsigned int X, unsigned int Y, string pa
   {
     m_bishopMovements[i] = Piece::m_pieceMovements[i+12];
   }
+  m_distancePossible = 7;
 }
 Bishop::~Bishop() {}
+
+int Bishop::get_nbPieceMovements() { return 4; }
+pair<int, int> Bishop::get_pieceMovements(int x) { return m_bishopMovements[x]; }
 
 /* Knight */
 Knight::Knight(piece_color colorPiece, unsigned int X, unsigned int Y, string pathToImageFile) : Piece(colorPiece, X, Y, pathToImageFile)
@@ -100,8 +116,12 @@ Knight::Knight(piece_color colorPiece, unsigned int X, unsigned int Y, string pa
   {
     m_knightMovements[i] = m_pieceMovements[i];
   }
+  m_distancePossible = 1;
 }
 Knight::~Knight() {}
+
+int Knight::get_nbPieceMovements() { return 8; }
+pair<int, int> Knight::get_pieceMovements(int x) { return m_knightMovements[x]; }
 
 /* Pawn */
 WhitePawn::WhitePawn(piece_color colorPiece, unsigned int X, unsigned int Y, string pathToImageFile) : Piece(colorPiece, X, Y, pathToImageFile)
@@ -110,8 +130,12 @@ WhitePawn::WhitePawn(piece_color colorPiece, unsigned int X, unsigned int Y, str
   m_whitePawnMovements[1] = pair<int, int> (0, 2);
   m_whitePawnMovements[2] = m_pieceMovements[12];
   m_whitePawnMovements[3] = m_pieceMovements[15];
+  m_distancePossible = 1;
 }
 WhitePawn::~WhitePawn() {}
+
+int WhitePawn::get_nbPieceMovements() { return 4; }
+pair<int, int> WhitePawn::get_pieceMovements(int x) { return m_whitePawnMovements[x]; }
 
 BlackPawn::BlackPawn(piece_color colorPiece, unsigned int X, unsigned int Y, string pathToImageFile) : Piece(colorPiece, X, Y, pathToImageFile)
 {
@@ -119,5 +143,9 @@ BlackPawn::BlackPawn(piece_color colorPiece, unsigned int X, unsigned int Y, str
   m_blackPawnMovements[1] = pair<int, int> (0, -2);
   m_blackPawnMovements[2] = m_pieceMovements[13];
   m_blackPawnMovements[3] = m_pieceMovements[14];
+  m_distancePossible = 1;
 }
 BlackPawn::~BlackPawn() {}
+
+int BlackPawn::get_nbPieceMovements() { return 4; }
+pair<int, int> BlackPawn::get_pieceMovements(int x) { return m_blackPawnMovements[x]; }

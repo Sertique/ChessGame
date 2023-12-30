@@ -1,31 +1,34 @@
 #include "raylib.h"
 #include "Echiquier.hpp"
 
+using namespace std;
+
 int main()
 {
 
-  const int windowWidth(1600); // Format : 16:9
-  const int windowHeigth(900);
+  const int windowWidth(1600), windowHeigth(900); /* Format : 16:9 */
+  int xMouse, yMouse;
   
   InitWindow(windowWidth, windowHeigth, "Chessgame");
   SetTargetFPS(30);
 
   Echiquier chessBoard;
 
-  // Texture2D array[32];
-  //
-  // Image wp = LoadImage("/test");
-  // ImageResize(Image *image, int newWidth, int newHeight)
-  // array[0] = LoadTextureFromImage(wp);
-
-
   while (!WindowShouldClose())
   {
     BeginDrawing();
 
-    ClearBackground(LIGHTGRAY);
-    //DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
     chessBoard.drawChessboard();
+
+    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+    {
+      xMouse = GetMouseX();
+      yMouse = GetMouseY();
+      chessBoard.pieceSelection(xMouse, yMouse);
+    }
+
+    chessBoard.drawMovements();
+    ClearBackground(LIGHTGRAY);
     EndDrawing();
   }
   CloseWindow();
