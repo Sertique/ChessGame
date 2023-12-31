@@ -158,27 +158,43 @@ void Echiquier::pInit(piece_type pieceType, piece_color colorPiece, unsigned int
 void Echiquier::pieceMovementsWriting(Piece &piece)
 {
   pair<int, int> p, currentPos;
-  int arrivalCell, xArrival, yArrival;
+  int arrivalCell, xArrival, yArrival; 
+  const int nbMovements(piece.get_nbPieceMovements());
+  bool banMovements[nbMovements];
+
+  for (int i(0) ; i < nbMovements ; i++)
+  {
+    banMovements[i] = false;
+  }
 
   m_pieceMovements.clear();
 
   for (int i(1) ; i <= piece.get_distance() ; i++) /* Répète suivant la distance possible */
   {
-    for (int j(0) ; j < piece.get_nbPieceMovements() ; j++)
+    for (int j(0) ; j < nbMovements ; j++)
     {
-      p = piece.get_pieceMovements(j);
-      currentPos = Piece::get_positionXY(piece.get_position());
-      xArrival = currentPos.first + p.first * i;
-      yArrival = currentPos.second + p.second * i;
-
-      if (xArrival >= 0 && xArrival < 8 && yArrival >= 0 && yArrival < 8)
+      if (!banMovements[j]) /* Bans directions who are occupied */
       {
-        arrivalCell = Piece::get_positionZ(xArrival, yArrival);
-      }
+        p = piece.get_pieceMovements(j);
+        currentPos = Piece::get_positionXY(piece.get_position());
+        xArrival = currentPos.first + p.first * i;
+        yArrival = currentPos.second + p.second * i;
 
-      if (arrivalCell < 64 && arrivalCell >= 0 && ( chessBoard[arrivalCell].pieceContent == nullptr || chessBoard[arrivalCell].pieceContent->get_color() != piece.get_color() ) )
-      {
-        m_pieceMovements.push_back(arrivalCell); /* Garde les coordonnées d'arrivée */
+        if (xArrival >= 0 && xArrival < 8 && yArrival >= 0 && yArrival < 8)
+        {
+          arrivalCell = Piece::get_positionZ(xArrival, yArrival);
+        }
+
+        if (chessBoard[arrivalCell].pieceContent == nullptr)
+        {
+          m_pieceMovements.push_back(arrivalCell);
+        } else if (chessBoard[arrivalCell].pieceContent->get_color() != piece.get_color())
+        {
+          m_pieceMovements.push_back(arrivalCell);
+          banMovements[j] = true;
+        } else {
+          banMovements[j] = true;
+        }
       }
     }
   }
@@ -189,6 +205,7 @@ void Echiquier::cellSelection(int xMouse, int yMouse)
   xMouse = xMouse - (xMouse % 100);
   yMouse = yMouse - (yMouse % 100);
   m_isSelected = false;
+  m_previousCell = m_selectedCell;
 
   for (int i(0) ; i < 64 ; i++ )
   {
@@ -216,15 +233,48 @@ void Echiquier::drawMovements()
   }
 }
 
+bool Echiquier::selectionEqualToMovement()
+{
+  bool t(false);
+  vector<int>::iterator it;
+  for (it = m_pieceMovements.begin() ; it != m_pieceMovements.end() ; it++)
+  {
+    t = (m_selectedCell == *it);
+  }
+  return t;
+}
+
 void Echiquier::pieceSelection(int xMouse, int yMouse)
 {
   cellSelection(xMouse, yMouse);
-  if (m_isSelected && m_selectedCell > -1)
+  if (m_isSelected)
   {
-    Piece *selection = chessBoard[m_selectedCell].pieceContent;
-    if (selection != nullptr)
+    Piece *selection(chessBoard[m_selectedCell].pieceContent);
+    if (selectionEqualToMovement())
+    {
+      pieceDeplacement(m_previousCell, m_selectedCell);
+      m_pieceMovements.clear();
+    } else if (selection != nullptr)
     {
       pieceMovementsWriting(*selection);
+    } else {
+      m_pieceMovements.clear();
     }
   }
+  // if (m_isSelected && m_selectedCell > -1)
+  // {
+  //   Piece *selection = chessBoard[m_selectedCell].pieceContent;
+  //   if (selection != nullptr)
+  //   {
+  //     pieceMovementsWriting(*selection);
+  //   } else {
+  //     m_pieceMovements.clear();
+  //   }
+  // }
+}
+
+void Echiquier::pieceDeplacement(unsigned int startCoordinateZ, unsigned int arrivalCoordinateZ)
+{
+  chessBoard[arrivalCoordinateZ].pieceContent = chessBoard[startCoordinateZ].pieceContent;
+  chessBoard[startCoordinateZ].pieceContent = nullptr;
 }

@@ -4,6 +4,4 @@ Echiquier.[c|h]pp => permet de gérer les échiquiers et leur interface + les mo
 Les pièces seront stockées directement dans l'échiquier.
 
 À travailler :
-  - Problème avec les mouvements de la reine noire.
-  - Faire en sorte de bloquer les mouvements lorsque l'on rencontre une pièce.
-  - Implémenter les mouvements des pièces.
+  - Implémenter les mouvements des pièces. => À finir pour que les pièces puissent se déplacer normalement et que ça ne crash pas.

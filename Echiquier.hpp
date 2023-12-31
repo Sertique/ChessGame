@@ -20,6 +20,8 @@ class Echiquier {
     void cellSelection(int xMouse, int yMouse);
     void drawMovements();
     void pieceSelection(int xMouse, int yMouse);
+    bool selectionEqualToMovement();
+    void pieceDeplacement(unsigned int startCoordinateZ, unsigned int arrivalCoordinateZ);
 
   private:
     static int m_cellSize;
@@ -27,6 +29,7 @@ class Echiquier {
     Cell chessBoard[64];
     vector<int> m_pieceMovements;
     int m_selectedCell;
+    int m_previousCell;
     bool m_isSelected;
 
 };
