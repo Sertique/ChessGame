@@ -1,6 +1,8 @@
 #include "Echiquier.hpp"
+#include "Piece.hpp"
 #include <iostream>
 #include <raylib.h>
+// #include <type_traits>
 #include <vector>
 
 int Echiquier::m_cellSize(100); /* */ int Echiquier::get_cellSize() { return m_cellSize; } /* */ int Echiquier::m_circlePosition(m_cellSize / 2);
@@ -168,13 +170,24 @@ void Echiquier::pieceMovementsWriting(Piece &piece)
   }
 
   m_pieceMovements.clear();
-  cout << "New piece :" << endl;
+
+  if (piece.get_pieceType() == pawn)
+  {
+    int row(Piece::get_positionXY(piece.get_position()).second);
+    if (piece.get_color() == White && row != 1)
+    {
+      banMovements[1] = true;
+    } else if (piece.get_color() == Black && row != 6)
+    {
+      banMovements[1] = true;
+    }
+  }
 
   for (int i(1) ; i <= piece.get_distance() ; i++) /* Répète suivant la distance possible */
   {
     for (int j(0) ; j < nbMovements ; j++)
     {
-      if (!banMovements[j]) /* Bans directions who are occupied */
+      if (!banMovements[j] && piece.get_pieceType() != pawn) /* Bans directions who are occupied */
       {
         p = piece.get_pieceMovements(j);
         currentPos = Piece::get_positionXY(piece.get_position());
@@ -196,6 +209,9 @@ void Echiquier::pieceMovementsWriting(Piece &piece)
             banMovements[j] = true;
           }
         }
+      } else if (!banMovements[j] && piece.get_pieceType() == pawn)
+      {
+        /* HERE ======================================================================================================= */
       }
     }
   }
@@ -228,9 +244,14 @@ void Echiquier::cellSelection(int xMouse, int yMouse)
 void Echiquier::drawMovements()
 {
   vector<int>::iterator it;
+  Color pointColor(BLUE);
   for (it = m_pieceMovements.begin() ; it != m_pieceMovements.end() ; it++)
   {
-    DrawCircle(chessBoard[*it].xOrigin + m_circlePosition, chessBoard[*it].yOrigin + m_circlePosition, 10, BLUE);
+    if (chessBoard[*it].pieceContent != nullptr)
+    {
+      pointColor = RED;
+    } else { pointColor = BLUE; }
+    DrawCircle(chessBoard[*it].xOrigin + m_circlePosition, chessBoard[*it].yOrigin + m_circlePosition, 10, pointColor);
   }
 }
 

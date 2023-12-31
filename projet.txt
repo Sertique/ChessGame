@@ -4,8 +4,7 @@ Echiquier.[c|h]pp => permet de gérer les échiquiers et leur interface + les mo
 Les pièces seront stockées directement dans l'échiquier.
 
 À travailler :
-  - Couleur rouge si mange une pièce
-  - Prise en passant
+  - Prise en passant => ligne 174 Echiquier.cpp
   - Roque
   - Echec et echec et mat
   - Liste des coups

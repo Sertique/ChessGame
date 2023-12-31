@@ -33,6 +33,7 @@ class Piece
     static pair<unsigned int, unsigned int> get_positionXY(unsigned int Z);
     Texture2D get_pieceTexture();
     int get_position();
+    piece_type get_pieceType();
     virtual ~Piece();
     virtual int get_nbPieceMovements() = 0;
     virtual pair<int ,int> get_pieceMovements(int x) = 0;
@@ -43,6 +44,7 @@ class Piece
     piece_color m_colorPiece;
     pair<int, int> m_pieceMovements[16];
     Texture2D m_pieceImage;
+    piece_type m_pieceType;
     unsigned int m_positionZ; /* The position in an one dimension array */
     unsigned int m_distancePossible; /* The maximal distance that the piece can to do */
 };
