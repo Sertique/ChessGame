@@ -4,4 +4,8 @@ Echiquier.[c|h]pp => permet de gérer les échiquiers et leur interface + les mo
 Les pièces seront stockées directement dans l'échiquier.
 
 À travailler :
-  - Implémenter les mouvements des pièces. => À finir pour que les pièces puissent se déplacer normalement et que ça ne crash pas.
+  - Couleur rouge si mange une pièce
+  - Prise en passant
+  - Roque
+  - Echec et echec et mat
+  - Liste des coups

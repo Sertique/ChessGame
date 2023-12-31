@@ -33,11 +33,12 @@ class Piece
     static pair<unsigned int, unsigned int> get_positionXY(unsigned int Z);
     Texture2D get_pieceTexture();
     int get_position();
-    ~Piece();
+    virtual ~Piece();
     virtual int get_nbPieceMovements() = 0;
     virtual pair<int ,int> get_pieceMovements(int x) = 0;
     unsigned int get_distance();
     piece_color get_color();
+    void newPositionZ(unsigned int newPosZ);
   protected:
     piece_color m_colorPiece;
     pair<int, int> m_pieceMovements[16];

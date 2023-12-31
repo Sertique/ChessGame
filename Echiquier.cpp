@@ -168,6 +168,7 @@ void Echiquier::pieceMovementsWriting(Piece &piece)
   }
 
   m_pieceMovements.clear();
+  cout << "New piece :" << endl;
 
   for (int i(1) ; i <= piece.get_distance() ; i++) /* Répète suivant la distance possible */
   {
@@ -183,17 +184,17 @@ void Echiquier::pieceMovementsWriting(Piece &piece)
         if (xArrival >= 0 && xArrival < 8 && yArrival >= 0 && yArrival < 8)
         {
           arrivalCell = Piece::get_positionZ(xArrival, yArrival);
-        }
 
-        if (chessBoard[arrivalCell].pieceContent == nullptr)
-        {
-          m_pieceMovements.push_back(arrivalCell);
-        } else if (chessBoard[arrivalCell].pieceContent->get_color() != piece.get_color())
-        {
-          m_pieceMovements.push_back(arrivalCell);
-          banMovements[j] = true;
-        } else {
-          banMovements[j] = true;
+          if (chessBoard[arrivalCell].pieceContent == nullptr)
+          {
+            m_pieceMovements.push_back(arrivalCell);
+          } else if (chessBoard[arrivalCell].pieceContent->get_color() != piece.get_color())
+          {
+            m_pieceMovements.push_back(arrivalCell);
+            banMovements[j] = true;
+          } else {
+            banMovements[j] = true;
+          }
         }
       }
     }
@@ -239,7 +240,10 @@ bool Echiquier::selectionEqualToMovement()
   vector<int>::iterator it;
   for (it = m_pieceMovements.begin() ; it != m_pieceMovements.end() ; it++)
   {
-    t = (m_selectedCell == *it);
+    if (m_selectedCell == *it)
+    {
+      t =  true;
+    }
   }
   return t;
 }
@@ -261,20 +265,22 @@ void Echiquier::pieceSelection(int xMouse, int yMouse)
       m_pieceMovements.clear();
     }
   }
-  // if (m_isSelected && m_selectedCell > -1)
-  // {
-  //   Piece *selection = chessBoard[m_selectedCell].pieceContent;
-  //   if (selection != nullptr)
-  //   {
-  //     pieceMovementsWriting(*selection);
-  //   } else {
-  //     m_pieceMovements.clear();
-  //   }
-  // }
 }
 
 void Echiquier::pieceDeplacement(unsigned int startCoordinateZ, unsigned int arrivalCoordinateZ)
 {
-  chessBoard[arrivalCoordinateZ].pieceContent = chessBoard[startCoordinateZ].pieceContent;
-  chessBoard[startCoordinateZ].pieceContent = nullptr;
+  if (chessBoard[arrivalCoordinateZ].pieceContent == nullptr)
+  {
+    chessBoard[arrivalCoordinateZ].pieceContent = chessBoard[startCoordinateZ].pieceContent;
+    chessBoard[startCoordinateZ].pieceContent = nullptr;
+    chessBoard[arrivalCoordinateZ].pieceContent->newPositionZ(arrivalCoordinateZ);
+  } else if (chessBoard[arrivalCoordinateZ].pieceContent->get_color() != chessBoard[startCoordinateZ].pieceContent->get_color())
+  {
+    delete chessBoard[arrivalCoordinateZ].pieceContent;
+    chessBoard[arrivalCoordinateZ].pieceContent = chessBoard[startCoordinateZ].pieceContent;
+    chessBoard[startCoordinateZ].pieceContent = nullptr;
+    chessBoard[arrivalCoordinateZ].pieceContent->newPositionZ(arrivalCoordinateZ);
+  } else {
+    cout << "Impossible movement" << endl;
+  }
 }

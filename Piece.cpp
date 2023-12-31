@@ -51,6 +51,11 @@ int Piece::get_position() { return m_positionZ; }
 unsigned int Piece::get_distance() { return m_distancePossible; }
 piece_color Piece::get_color() { return m_colorPiece; }
 
+void Piece::newPositionZ(unsigned int newPosZ)
+{
+  m_positionZ = newPosZ;
+}
+
 
 /* King */
 King::King(piece_color colorPiece, unsigned int X, unsigned int Y, string pathToImageFile) : Piece(colorPiece, X, Y, pathToImageFile)
