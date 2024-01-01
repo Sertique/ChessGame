@@ -4,7 +4,7 @@ Echiquier.[c|h]pp => permet de gérer les échiquiers et leur interface + les mo
 Les pièces seront stockées directement dans l'échiquier.
 
 À travailler :
-  - Prise en passant => ligne 174 Echiquier.cpp
+  - Liste des coups
+  - Prise en passant
   - Roque
   - Echec et echec et mat
-  - Liste des coups

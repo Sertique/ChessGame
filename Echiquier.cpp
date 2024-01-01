@@ -2,7 +2,7 @@
 #include "Piece.hpp"
 #include <iostream>
 #include <raylib.h>
-// #include <type_traits>
+#include <string>
 #include <vector>
 
 int Echiquier::m_cellSize(100); /* */ int Echiquier::get_cellSize() { return m_cellSize; } /* */ int Echiquier::m_circlePosition(m_cellSize / 2);
@@ -18,7 +18,7 @@ Color Echiquier::get_Color(piece_color color) { /* Color for the chessboard imag
 //   } else { return WHITE; }
 // }
 
-Echiquier::Echiquier()
+Echiquier::Echiquier() : m_colorPlayer(White)
 {
 /* Cells initialization */
   int x(m_cellSize), y(m_cellSize * 8); // I begin to the first cell who are at the bottom of the window.
@@ -211,8 +211,24 @@ void Echiquier::pieceMovementsWriting(Piece &piece)
         }
       } else if (!banMovements[j] && piece.get_pieceType() == pawn)
       {
-        /* HERE ======================================================================================================= */
+        p = piece.get_pieceMovements(j);
+        currentPos = Piece::get_positionXY(piece.get_position());
+        xArrival = currentPos.first + p.first;
+        yArrival = currentPos.second + p.second;
+        if (xArrival >= 0 && xArrival < 8 && yArrival >= 0 && yArrival < 8)
+        {
+          arrivalCell = Piece::get_positionZ(xArrival, yArrival);
+
+          if (j < 2 && chessBoard[arrivalCell].pieceContent == nullptr)
+          {
+            m_pieceMovements.push_back(arrivalCell);
+          } else if (j > 1 && chessBoard[arrivalCell].pieceContent != nullptr && chessBoard[arrivalCell].pieceContent->get_color() != m_colorPlayer)
+          {
+            m_pieceMovements.push_back(arrivalCell);
+          }
+        }
       }
+
     }
   }
 }
@@ -279,7 +295,8 @@ void Echiquier::pieceSelection(int xMouse, int yMouse)
     {
       pieceDeplacement(m_previousCell, m_selectedCell);
       m_pieceMovements.clear();
-    } else if (selection != nullptr)
+      changePlayer();
+    } else if (selection != nullptr && chessBoard[m_selectedCell].pieceContent->get_color() == m_colorPlayer)
     {
       pieceMovementsWriting(*selection);
     } else {
@@ -295,13 +312,64 @@ void Echiquier::pieceDeplacement(unsigned int startCoordinateZ, unsigned int arr
     chessBoard[arrivalCoordinateZ].pieceContent = chessBoard[startCoordinateZ].pieceContent;
     chessBoard[startCoordinateZ].pieceContent = nullptr;
     chessBoard[arrivalCoordinateZ].pieceContent->newPositionZ(arrivalCoordinateZ);
+
+    addMoveToHistory(arrivalCoordinateZ, startCoordinateZ, chessBoard[arrivalCoordinateZ].pieceContent->get_pieceType(), false);
+
   } else if (chessBoard[arrivalCoordinateZ].pieceContent->get_color() != chessBoard[startCoordinateZ].pieceContent->get_color())
   {
     delete chessBoard[arrivalCoordinateZ].pieceContent;
     chessBoard[arrivalCoordinateZ].pieceContent = chessBoard[startCoordinateZ].pieceContent;
     chessBoard[startCoordinateZ].pieceContent = nullptr;
     chessBoard[arrivalCoordinateZ].pieceContent->newPositionZ(arrivalCoordinateZ);
+
+    addMoveToHistory(arrivalCoordinateZ, startCoordinateZ, chessBoard[arrivalCoordinateZ].pieceContent->get_pieceType(), true);
+
   } else {
     cout << "Impossible movement" << endl;
+  }
+}
+
+
+void Echiquier::addMoveToHistory(int coordinateArrivalZ, int coordinateDepartureZ, piece_type type, bool isPieceEat)
+{ /* Without : check / check mat information */
+  pair<int, int> coorDep(Piece::get_positionXY(coordinateDepartureZ)), coorArr(Piece::get_positionXY(coordinateArrivalZ));
+  string pieceLetter(""), markPieceEat("");
+  switch (type) {
+    case rook:
+      pieceLetter = "R";
+      break;
+    case knight:
+      pieceLetter = "N";
+      break;
+    case bishop:
+      pieceLetter = "B";
+      break;
+    case king:
+      pieceLetter = "K";
+      break;
+    case queen:
+      pieceLetter = "Q";
+      break;
+    default:
+      break;
+  }
+  if (isPieceEat)
+  {
+    markPieceEat = "x";
+  }
+
+  string move(pieceLetter + static_cast<char>('a' - 1 + coorDep.first) + to_string(coorDep.second + 1) + markPieceEat + static_cast<char>('a' - 1 + coorArr.first) + to_string(coorArr.second + 1));
+  cout << move << endl;
+
+  m_moveHistory.push_back(move);
+}
+
+void Echiquier::changePlayer()
+{
+  if (m_colorPlayer == White)
+  {
+    m_colorPlayer = Black;
+  } else {
+    m_colorPlayer = White;
   }
 }

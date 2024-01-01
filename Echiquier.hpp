@@ -22,6 +22,8 @@ class Echiquier {
     void pieceSelection(int xMouse, int yMouse);
     bool selectionEqualToMovement();
     void pieceDeplacement(unsigned int startCoordinateZ, unsigned int arrivalCoordinateZ);
+    void addMoveToHistory(int coordinateArrivalZ, int coordinateDepartureZ, piece_type type, bool pieceEat);
+    void changePlayer();
 
   private:
     static int m_cellSize;
@@ -31,6 +33,8 @@ class Echiquier {
     int m_selectedCell;
     int m_previousCell;
     bool m_isSelected;
+    vector<string> m_moveHistory; 
+    piece_color m_colorPlayer;
 
 };
 
