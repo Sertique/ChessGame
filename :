@@ -218,15 +218,11 @@ void Echiquier::pieceMovementsWriting(Piece &piece)
         if (xArrival >= 0 && xArrival < 8 && yArrival >= 0 && yArrival < 8)
         {
           arrivalCell = Piece::get_positionZ(xArrival, yArrival);
-          vector<string>::iterator it(m_moveHistory.end() - 1); /* À modifier pour rendre le code propre */
 
           if (j < 2 && chessBoard[arrivalCell].pieceContent == nullptr)
           {
             m_pieceMovements.push_back(arrivalCell);
           } else if (j > 1 && chessBoard[arrivalCell].pieceContent != nullptr && chessBoard[arrivalCell].pieceContent->get_color() != m_colorPlayer)
-          {
-            m_pieceMovements.push_back(arrivalCell);
-          } else if (j > 1 && chessBoard[arrivalCell].pieceContent == nullptr && IsPossibleEnPassant() /* && (char)(*it)[0] == static_cast<char>('a' + currentPos.first) */) /* La dernière condition fait crasher */
           {
             m_pieceMovements.push_back(arrivalCell);
           }
@@ -362,7 +358,7 @@ void Echiquier::addMoveToHistory(int coordinateArrivalZ, int coordinateDeparture
     markPieceEat = "x";
   }
 
-  string move(pieceLetter + static_cast<char>('a' + coorDep.first) + to_string(coorDep.second + 1) + markPieceEat + static_cast<char>('a' + coorArr.first) + to_string(coorArr.second + 1));
+  string move(pieceLetter + static_cast<char>('a' - 1 + coorDep.first) + to_string(coorDep.second + 1) + markPieceEat + static_cast<char>('a' - 1 + coorArr.first) + to_string(coorArr.second + 1));
 
   m_moveHistory.push_back(move);
 }
@@ -425,29 +421,22 @@ void Echiquier::drawCellGrid(int x, int y, int cellWidth, int cellHeight)
 
 void Echiquier::drawTopCellHistory(bool secondColumn)
 {
-  int gapBtw(m_cellSize * 3);
-  int nbColumns(1);
-
-  if (secondColumn) { nbColumns = 2; }
+  int gapBtw(m_cellSize);
+  int nbColumns(1)
 
   for (int i(0) ; i < nbColumns ; i++)
   {
-  drawCellGrid(m_startGridX + gapBtw * i, m_startGridY - m_cellDimensions.second, m_cellDimensions.first, m_cellDimensions.second);
-  DrawText("White", m_startGridX + m_cellDimensions.first / 4 + gapBtw * i, m_startGridY - m_cellDimensions.second + 2, m_cellDimensions.second - 4, BLACK);
-  drawCellGrid(m_startGridX + m_cellDimensions.first + gapBtw * i, m_startGridY - m_cellDimensions.second, m_cellDimensions.first, m_cellDimensions.second);
-  DrawText("Black", m_startGridX + m_cellDimensions.first + m_cellDimensions.first / 4 + gapBtw * i, m_startGridY - m_cellDimensions.second + 2, m_cellDimensions.second - 4, BLACK);
+
   }
 
-}
+  drawCellGrid(m_startGridX, m_startGridY - m_cellDimensions.second, m_cellDimensions.first, m_cellDimensions.second);
+  DrawText("White", m_startGridX + m_cellDimensions.first / 4, m_startGridY - m_cellDimensions.second + 2, m_cellDimensions.second - 4, BLACK);
+  drawCellGrid(m_startGridX + m_cellDimensions.first, m_startGridY - m_cellDimensions.second, m_cellDimensions.first, m_cellDimensions.second);
+  DrawText("Black", m_startGridX + m_cellDimensions.first + m_cellDimensions.first / 4, m_startGridY - m_cellDimensions.second + 2, m_cellDimensions.second - 4, BLACK);
 
-bool Echiquier::IsPossibleEnPassant() /* To modify */
-{
-  // vector<string>::iterator it(m_moveHistory.end());
-  // it--;
-  //
-  // if (it->size() == 4 && (int)(*it)[1] == (int)(*it)[3] - 2) /* Fait crasher le jeu */
-  // {
-  //   return true;
-  // }
-  return false;
+  if (secondColumn)
+  {
+    
+  }
+
 }

@@ -10,7 +10,7 @@
 class Echiquier {
 
   public:
-    Echiquier();
+    Echiquier(unsigned int windowWidth, unsigned int windowHeight);
     void drawChessboard();
     bool estPair(int x);
     static int get_cellSize();
@@ -24,10 +24,15 @@ class Echiquier {
     void pieceDeplacement(unsigned int startCoordinateZ, unsigned int arrivalCoordinateZ);
     void addMoveToHistory(int coordinateArrivalZ, int coordinateDepartureZ, piece_type type, bool pieceEat);
     void changePlayer();
+    void drawHistory();
+    void drawCellGrid(int x, int y, int cellWidth, int cellHeight);
+    void drawTopCellHistory(bool secondColumn);
+    bool IsPossibleEnPassant();
 
   private:
     static int m_cellSize;
     static int m_circlePosition;
+    unsigned int m_windowWidth, m_windowHeight;
     Cell chessBoard[64];
     vector<int> m_pieceMovements;
     int m_selectedCell;
@@ -35,6 +40,8 @@ class Echiquier {
     bool m_isSelected;
     vector<string> m_moveHistory; 
     piece_color m_colorPlayer;
+    unsigned int m_startGridX, m_startGridY;
+    pair<int, int> m_cellDimensions;
 
 };
 

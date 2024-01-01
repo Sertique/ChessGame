@@ -4,7 +4,6 @@ Echiquier.[c|h]pp => permet de gérer les échiquiers et leur interface + les mo
 Les pièces seront stockées directement dans l'échiquier.
 
 À travailler :
-  - Liste des coups
-  - Prise en passant
+  - Prise en passant => faire une transformation d'une lettre en un chiffre pour comparer si le pion peut faire la prise en passant car le pion adverse venant de bouger est à côté.
   - Roque
   - Echec et echec et mat

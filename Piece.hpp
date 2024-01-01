@@ -130,8 +130,7 @@ class BlackPawn : public Piece
 struct Cell
 {
   piece_color colorOfCell;
-  int xOrigin;
-  int yOrigin;
+  int xOrigin, yOrigin;
   int cellSize;
   Piece *pieceContent = 0;
 };

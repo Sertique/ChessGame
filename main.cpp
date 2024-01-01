@@ -1,4 +1,4 @@
-#include "raylib.h"
+#include <raylib.h>
 #include "Echiquier.hpp"
 
 using namespace std;
@@ -12,7 +12,7 @@ int main()
   InitWindow(windowWidth, windowHeigth, "Chessgame");
   SetTargetFPS(30);
 
-  Echiquier chessBoard;
+  Echiquier chessBoard(windowWidth, windowHeigth);
 
   while (!WindowShouldClose())
   {
@@ -28,6 +28,8 @@ int main()
     }
 
     chessBoard.drawMovements();
+    chessBoard.drawHistory();
+    
     ClearBackground(LIGHTGRAY);
     EndDrawing();
   }
