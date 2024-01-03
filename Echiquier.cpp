@@ -240,11 +240,11 @@ void Echiquier::pieceMovementsWriting(Piece &piece)
           } else if (j > 1 && arrivalCell != nullptr && arrivalCell->get_color() != m_colorPlayer)
           {
             m_pieceMovements.push_back(arrivalCellNumber);
-          } else if (j > 1 && arrivalCell == nullptr && opposingPiece != nullptr && opposingPiece->get_pieceType() == pawn && opposingPiece->get_color() != piece.get_color()  && m_moveHistory.size() && it->pieceType == pawn && it->xArrival == xArrival)
+          } else if (j > 1 && arrivalCell == nullptr && opposingPiece != nullptr && opposingPiece->get_pieceType() == pawn && opposingPiece->get_color() != piece.get_color()  && m_moveHistory.size() && it->pieceType == pawn && it->xArrival == xArrival && ( it->yArrival - it->yDeparture == 2 || it->yArrival - it->yDeparture == -2) )
           {
             m_pieceMovements.push_back(arrivalCellNumber);
             piece.modifyEatEnPassant(xArrival, yArrival, j == 2); 
-            cout << xArrival << " : " << yArrival << endl;
+
           } else if (j == 1 && arrivalCell == nullptr && chessBoard[Piece::get_positionZ(xArrival, currentPos.second + piece.get_pieceMovements(0).second)].pieceContent == nullptr)
           {
             m_pieceMovements.push_back(arrivalCellNumber);
@@ -354,7 +354,13 @@ void Echiquier::pieceDeplacement(unsigned int startCoordinateZ, unsigned int arr
 
   } else if (chessBoard[startCoordinateZ].pieceContent->get_pieceType() == pawn && chessBoard[startCoordinateZ].pieceContent->get_eatEnPassant() && (cellEnPassant.first.first == xArrival || cellEnPassant.second.first == xArrival) ) {
   
-    chessBoard[arrivalCoordinateZ - 8].pieceContent = nullptr; /* The piece doesn't want to be deleted */
+    int eight;
+    if (departureCell->get_color() == White)
+    {
+      eight = -8;
+    } else { eight = 8; }
+    
+    chessBoard[arrivalCoordinateZ + eight].pieceContent = nullptr; /* The piece doesn't want to be deleted */
     chessBoard[arrivalCoordinateZ].pieceContent = chessBoard[startCoordinateZ].pieceContent;
     chessBoard[startCoordinateZ].pieceContent = nullptr;
     chessBoard[arrivalCoordinateZ].pieceContent->newPositionZ(arrivalCoordinateZ);
