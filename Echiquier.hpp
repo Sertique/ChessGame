@@ -22,12 +22,14 @@ class Echiquier {
     void pieceSelection(int xMouse, int yMouse);
     bool selectionEqualToMovement();
     void pieceDeplacement(unsigned int startCoordinateZ, unsigned int arrivalCoordinateZ);
-    void addMoveToHistory(int coordinateArrivalZ, int coordinateDepartureZ, piece_type type, bool pieceEat);
+    void addMoveToHistory(int coordinateArrivalZ, int coordinateDepartureZ, piece_type type, bool pieceEat, bool check, bool checkMat);
     void changePlayer();
     void drawHistory();
     void drawCellGrid(int x, int y, int cellWidth, int cellHeight);
     void drawTopCellHistory(bool secondColumn);
     bool IsPossibleEnPassant();
+    string historyMoveString(historyCoup &movement);
+    bool da();
 
   private:
     static int m_cellSize;
@@ -38,7 +40,7 @@ class Echiquier {
     int m_selectedCell;
     int m_previousCell;
     bool m_isSelected;
-    vector<string> m_moveHistory; 
+    vector<historyCoup> m_moveHistory; 
     piece_color m_colorPlayer;
     unsigned int m_startGridX, m_startGridY;
     pair<int, int> m_cellDimensions;

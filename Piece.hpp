@@ -5,6 +5,7 @@
 #include <string>
 
 using namespace std;
+/* To create a mother class Pawn for WhitePawn and BlackPawn */
 
 
 enum piece_type
@@ -25,6 +26,13 @@ enum piece_color
   Black
 };
 
+
+struct enPassant
+{
+    pair<bool, bool> isPossible;
+    pair<pair<int, int>, pair<int, int>> xPieceWhoIsEating;
+};
+
 class Piece
 {
   public:
@@ -40,6 +48,10 @@ class Piece
     unsigned int get_distance();
     piece_color get_color();
     void newPositionZ(unsigned int newPosZ);
+    virtual bool get_eatEnPassant();
+    virtual pair<pair<int, int>, pair<int, int>> get_XYeatEnPassant();
+    virtual void modifyEatEnPassant(int nothing, int nothingY, bool nothingMore);
+    virtual void resetEnPassant();
   protected:
     piece_color m_colorPiece;
     pair<int, int> m_pieceMovements[16];
@@ -111,8 +123,13 @@ class WhitePawn : public Piece
     ~WhitePawn();
     virtual int get_nbPieceMovements();
     virtual pair<int, int> get_pieceMovements(int x);
+    virtual bool get_eatEnPassant();
+    virtual pair<pair<int, int>, pair<int, int>> get_XYeatEnPassant();
+    virtual void modifyEatEnPassant(int coordinateX, int coordinateY, bool firstMove);
+    virtual void resetEnPassant();
   protected:
     pair<int, int> m_whitePawnMovements[4];
+    enPassant m_eatEnPassant;
 };
 
 class BlackPawn : public Piece
@@ -122,8 +139,13 @@ class BlackPawn : public Piece
     ~BlackPawn();
     virtual int get_nbPieceMovements();
     virtual pair<int, int> get_pieceMovements(int x);
+    virtual bool get_eatEnPassant();
+    virtual pair<pair<int, int>, pair<int, int>> get_XYeatEnPassant();
+    virtual void modifyEatEnPassant(int coordinateX, int coordinateY, bool firstMove);
+    virtual void resetEnPassant();
   protected:
     pair<int, int> m_blackPawnMovements[4];
+    enPassant m_eatEnPassant;
 };
 
 
@@ -135,6 +157,16 @@ struct Cell
   Piece *pieceContent = 0;
 };
 typedef struct Cell Cell ;
+
+struct historyCoup
+{
+  int xDeparture, yDeparture;
+  int xArrival, yArrival;
+  piece_type pieceType;
+  bool pieceEating;
+  bool check;
+  bool checkMat;
+};
 
 
 

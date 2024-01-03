@@ -1,6 +1,5 @@
 #include "Piece.hpp"
 #include "Echiquier.hpp"
-#include <raylib.h>
 
 /* Static functions */
 unsigned int Piece::get_positionZ(unsigned int X, unsigned int Y)
@@ -60,6 +59,18 @@ piece_type Piece::get_pieceType()
 {
   return m_pieceType;
 }
+
+bool Piece::get_eatEnPassant() { return false; }
+pair<pair<int, int>, pair<int, int>> Piece::get_XYeatEnPassant() { 
+  pair<pair<int, int>, pair<int, int>> test;
+  test.first.first = -1;
+  test.first.second = -1;
+  test.second.first = -1;
+  test.second.second = -1;
+  return test;
+}
+void Piece::resetEnPassant() {}
+void Piece::modifyEatEnPassant(int nothing, int nothingY, bool nothingMore) {}
 
 /* ======= King ======= */
 King::King(piece_color colorPiece, unsigned int X, unsigned int Y, string pathToImageFile) : Piece(colorPiece, X, Y, pathToImageFile)
@@ -140,17 +151,45 @@ pair<int, int> Knight::get_pieceMovements(int x) { return m_knightMovements[x]; 
 /* ======= Pawn ======= */
 WhitePawn::WhitePawn(piece_color colorPiece, unsigned int X, unsigned int Y, string pathToImageFile) : Piece(colorPiece, X, Y, pathToImageFile)
 {
+  
   m_whitePawnMovements[0] = m_pieceMovements[8];
   m_whitePawnMovements[1] = pair<int, int> (0, 2);
   m_whitePawnMovements[2] = m_pieceMovements[12];
   m_whitePawnMovements[3] = m_pieceMovements[15];
   m_distancePossible = 1;
   m_pieceType = pawn;
+
+  resetEnPassant();
 }
 WhitePawn::~WhitePawn() {}
 
 int WhitePawn::get_nbPieceMovements() { return 4; }
 pair<int, int> WhitePawn::get_pieceMovements(int x) { return m_whitePawnMovements[x]; }
+bool WhitePawn::get_eatEnPassant() { return m_eatEnPassant.isPossible.first || m_eatEnPassant.isPossible.second; }
+pair<pair<int, int>, pair<int, int>> WhitePawn::get_XYeatEnPassant() { return m_eatEnPassant.xPieceWhoIsEating; }
+void WhitePawn::modifyEatEnPassant(int coordinateX, int coordinateY, bool firstMove)
+{
+  if (firstMove)
+  {
+    m_eatEnPassant.xPieceWhoIsEating.first.first = coordinateX;
+    m_eatEnPassant.xPieceWhoIsEating.first.second = coordinateY;
+    m_eatEnPassant.isPossible.first = true;
+  } else {
+    m_eatEnPassant.xPieceWhoIsEating.second.first = coordinateX;
+    m_eatEnPassant.xPieceWhoIsEating.second.second = coordinateY;
+    m_eatEnPassant.isPossible.second = true;
+  }
+}
+
+void WhitePawn::resetEnPassant()
+{
+  m_eatEnPassant.isPossible.first = false;
+  m_eatEnPassant.isPossible.second = false;
+  m_eatEnPassant.xPieceWhoIsEating.first.first = -1;
+  m_eatEnPassant.xPieceWhoIsEating.second.first = -1;
+  m_eatEnPassant.xPieceWhoIsEating.first.second = -1;
+  m_eatEnPassant.xPieceWhoIsEating.second.second = -1;
+}
 
 BlackPawn::BlackPawn(piece_color colorPiece, unsigned int X, unsigned int Y, string pathToImageFile) : Piece(colorPiece, X, Y, pathToImageFile)
 {
@@ -160,8 +199,35 @@ BlackPawn::BlackPawn(piece_color colorPiece, unsigned int X, unsigned int Y, str
   m_blackPawnMovements[3] = m_pieceMovements[14];
   m_distancePossible = 1;
   m_pieceType = pawn;
+
+  resetEnPassant();
 }
 BlackPawn::~BlackPawn() {}
 
 int BlackPawn::get_nbPieceMovements() { return 4; }
 pair<int, int> BlackPawn::get_pieceMovements(int x) { return m_blackPawnMovements[x]; }
+bool BlackPawn::get_eatEnPassant() { return m_eatEnPassant.isPossible.first || m_eatEnPassant.isPossible.second; }
+pair<pair<int, int>, pair<int, int>> BlackPawn::get_XYeatEnPassant() { return m_eatEnPassant.xPieceWhoIsEating; }
+void BlackPawn::modifyEatEnPassant(int coordinateX, int coordinateY, bool firstMove)
+{
+  if (firstMove)
+  {
+    m_eatEnPassant.xPieceWhoIsEating.first.first = coordinateX;
+    m_eatEnPassant.xPieceWhoIsEating.first.second = coordinateY;
+    m_eatEnPassant.isPossible.first = true;
+  } else {
+    m_eatEnPassant.xPieceWhoIsEating.second.first = coordinateX;
+    m_eatEnPassant.xPieceWhoIsEating.second.second = coordinateY;
+    m_eatEnPassant.isPossible.second = true;
+  }
+}
+
+void BlackPawn::resetEnPassant()
+{
+  m_eatEnPassant.isPossible.first = false;
+  m_eatEnPassant.isPossible.second = false;
+  m_eatEnPassant.xPieceWhoIsEating.first.first = -1;
+  m_eatEnPassant.xPieceWhoIsEating.second.first = -1;
+  m_eatEnPassant.xPieceWhoIsEating.first.second = -1;
+  m_eatEnPassant.xPieceWhoIsEating.second.second = -1;
+}

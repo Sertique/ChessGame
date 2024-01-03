@@ -1,9 +1,8 @@
 main.cpp => boucle de jeu
 Echiquier.[c|h]pp => permet de gérer les échiquiers et leur interface + les mouvements des pièces.
 
-Les pièces seront stockées directement dans l'échiquier.
+Réécrire la prise en passant pour être plus claire.
 
 À travailler :
-  - Prise en passant => faire une transformation d'une lettre en un chiffre pour comparer si le pion peut faire la prise en passant car le pion adverse venant de bouger est à côté.
   - Roque
   - Echec et echec et mat

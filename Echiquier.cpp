@@ -160,9 +160,10 @@ void Echiquier::pInit(piece_type pieceType, piece_color colorPiece, unsigned int
 void Echiquier::pieceMovementsWriting(Piece &piece)
 {
   pair<int, int> p, currentPos;
-  int arrivalCell, xArrival, yArrival; 
+  int arrivalCellNumber, xArrival, yArrival; 
   const int nbMovements(piece.get_nbPieceMovements());
   bool banMovements[nbMovements];
+  Piece *arrivalCell;
 
   for (int i(0) ; i < nbMovements ; i++)
   {
@@ -182,6 +183,7 @@ void Echiquier::pieceMovementsWriting(Piece &piece)
       banMovements[1] = true;
     }
   }
+  piece.resetEnPassant();
 
   for (int i(1) ; i <= piece.get_distance() ; i++) /* Répète suivant la distance possible */
   {
@@ -196,14 +198,15 @@ void Echiquier::pieceMovementsWriting(Piece &piece)
 
         if (xArrival >= 0 && xArrival < 8 && yArrival >= 0 && yArrival < 8)
         {
-          arrivalCell = Piece::get_positionZ(xArrival, yArrival);
+          arrivalCellNumber = Piece::get_positionZ(xArrival, yArrival);
+          arrivalCell = chessBoard[arrivalCellNumber].pieceContent;
 
-          if (chessBoard[arrivalCell].pieceContent == nullptr)
+          if (arrivalCell == nullptr)
           {
-            m_pieceMovements.push_back(arrivalCell);
-          } else if (chessBoard[arrivalCell].pieceContent->get_color() != piece.get_color())
+            m_pieceMovements.push_back(arrivalCellNumber);
+          } else if (arrivalCell->get_color() != piece.get_color())
           {
-            m_pieceMovements.push_back(arrivalCell);
+            m_pieceMovements.push_back(arrivalCellNumber);
             banMovements[j] = true;
           } else {
             banMovements[j] = true;
@@ -215,20 +218,36 @@ void Echiquier::pieceMovementsWriting(Piece &piece)
         currentPos = Piece::get_positionXY(piece.get_position());
         xArrival = currentPos.first + p.first;
         yArrival = currentPos.second + p.second;
+        vector<historyCoup>::iterator it(m_moveHistory.end() - 1);
+        
         if (xArrival >= 0 && xArrival < 8 && yArrival >= 0 && yArrival < 8)
         {
-          arrivalCell = Piece::get_positionZ(xArrival, yArrival);
-          vector<string>::iterator it(m_moveHistory.end() - 1); /* À modifier pour rendre le code propre */
+          arrivalCellNumber = Piece::get_positionZ(xArrival, yArrival);
+          arrivalCell = chessBoard[arrivalCellNumber].pieceContent;
+          int less(0);
+          if (piece.get_color() == White)
+          {
+            less = -1;
+          } else {
+            less = 1;
+          }
+          unsigned int arrivalCellLessOne = Piece::get_positionZ(xArrival, yArrival + less);
+          Piece *opposingPiece(chessBoard[arrivalCellLessOne].pieceContent);
 
-          if (j < 2 && chessBoard[arrivalCell].pieceContent == nullptr)
+          if (j == 0 && arrivalCell == nullptr)
           {
-            m_pieceMovements.push_back(arrivalCell);
-          } else if (j > 1 && chessBoard[arrivalCell].pieceContent != nullptr && chessBoard[arrivalCell].pieceContent->get_color() != m_colorPlayer)
+            m_pieceMovements.push_back(arrivalCellNumber);
+          } else if (j > 1 && arrivalCell != nullptr && arrivalCell->get_color() != m_colorPlayer)
           {
-            m_pieceMovements.push_back(arrivalCell);
-          } else if (j > 1 && chessBoard[arrivalCell].pieceContent == nullptr && IsPossibleEnPassant() /* && (char)(*it)[0] == static_cast<char>('a' + currentPos.first) */) /* La dernière condition fait crasher */
+            m_pieceMovements.push_back(arrivalCellNumber);
+          } else if (j > 1 && arrivalCell == nullptr && opposingPiece != nullptr && opposingPiece->get_pieceType() == pawn && opposingPiece->get_color() != piece.get_color()  && m_moveHistory.size() && it->pieceType == pawn && it->xArrival == xArrival)
           {
-            m_pieceMovements.push_back(arrivalCell);
+            m_pieceMovements.push_back(arrivalCellNumber);
+            piece.modifyEatEnPassant(xArrival, yArrival, j == 2); 
+            cout << xArrival << " : " << yArrival << endl;
+          } else if (j == 1 && arrivalCell == nullptr && chessBoard[Piece::get_positionZ(xArrival, currentPos.second + piece.get_pieceMovements(0).second)].pieceContent == nullptr)
+          {
+            m_pieceMovements.push_back(arrivalCellNumber);
           }
         }
       }
@@ -311,58 +330,65 @@ void Echiquier::pieceSelection(int xMouse, int yMouse)
 
 void Echiquier::pieceDeplacement(unsigned int startCoordinateZ, unsigned int arrivalCoordinateZ)
 {
-  if (chessBoard[arrivalCoordinateZ].pieceContent == nullptr)
+  Piece *arrivalCell(chessBoard[arrivalCoordinateZ].pieceContent);
+  Piece *departureCell(chessBoard[startCoordinateZ].pieceContent);
+  pair<pair<int, int>, pair<int, int>> cellEnPassant(departureCell->get_XYeatEnPassant());
+  int xArrival(Piece::get_positionXY(arrivalCoordinateZ).first);
+
+  if (arrivalCell == nullptr && departureCell->get_pieceType() != pawn)
   {
     chessBoard[arrivalCoordinateZ].pieceContent = chessBoard[startCoordinateZ].pieceContent;
     chessBoard[startCoordinateZ].pieceContent = nullptr;
     chessBoard[arrivalCoordinateZ].pieceContent->newPositionZ(arrivalCoordinateZ);
 
-    addMoveToHistory(arrivalCoordinateZ, startCoordinateZ, chessBoard[arrivalCoordinateZ].pieceContent->get_pieceType(), false);
+    addMoveToHistory(arrivalCoordinateZ, startCoordinateZ, chessBoard[arrivalCoordinateZ].pieceContent->get_pieceType(), false, false, false); /* Changes that */
 
-  } else if (chessBoard[arrivalCoordinateZ].pieceContent->get_color() != chessBoard[startCoordinateZ].pieceContent->get_color())
+  } else if (chessBoard[arrivalCoordinateZ].pieceContent != nullptr && chessBoard[arrivalCoordinateZ].pieceContent->get_color() != chessBoard[startCoordinateZ].pieceContent->get_color())
   {
     delete chessBoard[arrivalCoordinateZ].pieceContent;
     chessBoard[arrivalCoordinateZ].pieceContent = chessBoard[startCoordinateZ].pieceContent;
     chessBoard[startCoordinateZ].pieceContent = nullptr;
     chessBoard[arrivalCoordinateZ].pieceContent->newPositionZ(arrivalCoordinateZ);
 
-    addMoveToHistory(arrivalCoordinateZ, startCoordinateZ, chessBoard[arrivalCoordinateZ].pieceContent->get_pieceType(), true);
+    addMoveToHistory(arrivalCoordinateZ, startCoordinateZ, chessBoard[arrivalCoordinateZ].pieceContent->get_pieceType(), true, false, false);
 
-  } else {
+  } else if (chessBoard[startCoordinateZ].pieceContent->get_pieceType() == pawn && chessBoard[startCoordinateZ].pieceContent->get_eatEnPassant() && (cellEnPassant.first.first == xArrival || cellEnPassant.second.first == xArrival) ) {
+  
+    chessBoard[arrivalCoordinateZ - 8].pieceContent = nullptr; /* The piece doesn't want to be deleted */
+    chessBoard[arrivalCoordinateZ].pieceContent = chessBoard[startCoordinateZ].pieceContent;
+    chessBoard[startCoordinateZ].pieceContent = nullptr;
+    chessBoard[arrivalCoordinateZ].pieceContent->newPositionZ(arrivalCoordinateZ);
+
+    addMoveToHistory(arrivalCoordinateZ, startCoordinateZ, pawn, true, false, false);
+
+  } else if (chessBoard[arrivalCoordinateZ].pieceContent == nullptr && chessBoard[startCoordinateZ].pieceContent->get_pieceType() == pawn)
+  {
+    chessBoard[arrivalCoordinateZ].pieceContent = chessBoard[startCoordinateZ].pieceContent;
+    chessBoard[startCoordinateZ].pieceContent = nullptr;
+    chessBoard[arrivalCoordinateZ].pieceContent->newPositionZ(arrivalCoordinateZ);
+
+    addMoveToHistory(arrivalCoordinateZ, startCoordinateZ, pawn, false, false, false);
+
+  }
+  else {
     cout << "Impossible movement" << endl;
   }
 }
 
 
-void Echiquier::addMoveToHistory(int coordinateArrivalZ, int coordinateDepartureZ, piece_type type, bool isPieceEat)
-{ /* Without : check / check mat information */
+void Echiquier::addMoveToHistory(int coordinateArrivalZ, int coordinateDepartureZ, piece_type type, bool isPieceEat, bool check, bool checkMat)
+{
   pair<int, int> coorDep(Piece::get_positionXY(coordinateDepartureZ)), coorArr(Piece::get_positionXY(coordinateArrivalZ));
-  string pieceLetter(""), markPieceEat("");
-  switch (type) {
-    case rook:
-      pieceLetter = "R";
-      break;
-    case knight:
-      pieceLetter = "N";
-      break;
-    case bishop:
-      pieceLetter = "B";
-      break;
-    case king:
-      pieceLetter = "K";
-      break;
-    case queen:
-      pieceLetter = "Q";
-      break;
-    default:
-      break;
-  }
-  if (isPieceEat)
-  {
-    markPieceEat = "x";
-  }
-
-  string move(pieceLetter + static_cast<char>('a' + coorDep.first) + to_string(coorDep.second + 1) + markPieceEat + static_cast<char>('a' + coorArr.first) + to_string(coorArr.second + 1));
+  
+  historyCoup move;
+  move.xDeparture = coorDep.first;
+  move.yDeparture = coorDep.second;
+  move.xArrival = coorArr.first;
+  move.yArrival = coorArr.second;
+  move.pieceType = type;
+  move.pieceEating = isPieceEat;
+  move.check = check;
+  move.checkMat = checkMat;
 
   m_moveHistory.push_back(move);
 }
@@ -382,7 +408,7 @@ void Echiquier::drawHistory()
   int basicWidth(m_cellSize * 10), basicHeight(100);
   unsigned int numberCase(m_moveHistory.size()), i(0);
   m_startGridX = basicWidth, m_startGridY = basicHeight;
-  vector<string>::iterator it(m_moveHistory.begin());
+  vector<historyCoup>::iterator it(m_moveHistory.begin());
   bool secondColumn(false);
 
   secondColumn = m_moveHistory.size() > 66;
@@ -393,7 +419,7 @@ void Echiquier::drawHistory()
     for (it = m_moveHistory.begin() ; it != m_moveHistory.end() ; it++)
     {
       drawCellGrid(m_startGridX, m_startGridY, m_cellDimensions.first, m_cellDimensions.second);
-      DrawText(it->c_str(), m_startGridX + 2, m_startGridY + 2, m_cellDimensions.second - 4, BLACK);
+      DrawText(historyMoveString(*it).c_str(), m_startGridX + 2, m_startGridY + 2, m_cellDimensions.second - 4, BLACK);
       i++;
 
       if (i % 2 == 1)
@@ -440,14 +466,51 @@ void Echiquier::drawTopCellHistory(bool secondColumn)
 
 }
 
-bool Echiquier::IsPossibleEnPassant() /* To modify */
+string Echiquier::historyMoveString(historyCoup &movement)
 {
-  // vector<string>::iterator it(m_moveHistory.end());
-  // it--;
-  //
-  // if (it->size() == 4 && (int)(*it)[1] == (int)(*it)[3] - 2) /* Fait crasher le jeu */
-  // {
-  //   return true;
-  // }
-  return false;
+  string pieceLetter(""), markPieceEat(""), markCheckOrMat("");
+  string coorDep(static_cast<char>('a' + movement.xDeparture) + to_string(movement.yDeparture + 1));
+  string coorArr(static_cast<char>('a' + movement.xArrival) + to_string(movement.yArrival + 1));
+
+
+  switch (movement.pieceType) {
+    case rook:
+      pieceLetter = "R";
+      break;
+    case knight:
+      pieceLetter = "N";
+      break;
+    case bishop:
+      pieceLetter = "B";
+      break;
+    case king:
+      pieceLetter = "K";
+      break;
+    case queen:
+      pieceLetter = "Q";
+      break;
+    default:
+      break;
+  }
+
+  if (movement.pieceEating)
+  {
+    markPieceEat = "x";
+  }
+
+  if (movement.check)
+  {
+    markCheckOrMat = "+";
+  } else if (movement.checkMat)
+  {
+    markCheckOrMat = "#";
+  }
+
+  return pieceLetter + coorDep + markPieceEat + coorArr + markCheckOrMat;
+}
+
+bool Echiquier::da() /* To verify and to test */
+{
+  cout << "da" << endl;
+  return true;
 }
